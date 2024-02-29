@@ -6,6 +6,40 @@
     <title>Listagem de pessoas</title>
 </head>
 <body>
+    <!-- Formulário de Cadastro -->
+    <h1>CRUD de Contatos</h1>
+    <form action="" method="post">
+        <fieldset>
+            <legend>Cadastro de Contatos</legend>        
+                <label for="id">Id:</label>
+                <input type="text" name="id" id="id" value="" readonly>
+                <label for="nome">Nome:</label>
+                <input type="text" name="nome" id="nome" value="">
+                <label for="telefone">Telefone:</label>
+                <input type="text" name="telefone" id="telefone" value="">
+                <button type='submit'>Salvar</button>
+                <button type='reset'>Cancelar</button>
+        </fieldset>
+    </form>
+    <hr>
+    <!-- Formulário de pesquisa -->
+    <form action="" method="get">
+        <fieldset>
+            <legend>Pesquisa</legend>
+            <label for="busca">Busca:</label>
+            <input type="text" name="busca" id="busca" value="">
+            <label for="tipo">Tipo:</label>
+            <select name="tipo" id="tipo">
+                <option value="0">Escolha</option>
+                <option value="1">Id</option>
+                <option value="2">Nome</option>
+                <option value="3">Telefone</option>
+            </select>
+        <button type='submit'>Buscar</button>
+
+        </fieldset>
+    </form>
+    <hr>
     <h1>Lista meus contatos</h1>
     <table>
         <tr>
@@ -28,24 +62,59 @@
             // montar consulta
             $sql = "SELECT * FROM pessoa";
 
-            $id =  isset($_GET['id'])?$_GET['id']:0; // pegar id
+            $busca =  isset($_GET['busca'])?$_GET['busca']:0; // pegar busca
+            $tipo =  isset($_GET['tipo'])?$_GET['tipo']:0; // pegar busca
 
-            if ($id > 0 )
-                $sql .= " WHERE id = :id";
+            if ($tipo > 0 )
+                switch($tipo){
+                    case 1: $sql .= " WHERE id = :busca"; break;
+                    case 2: $sql .= " WHERE nome like :busca"; $busca = "%{$busca}%"; break;
+                    case 3: $sql .= " WHERE telefone like :busca";  $busca = "%{$busca}%";  break;
 
+                }
+    
             // prepara o comando
             $comando = $conexao->prepare($sql); // preparar comando
             // vincular os parâmetros
-            if ($id > 0 )
-                $comando->bindValue(':id',$id);
-
+            if ($tipo > 0 )
+                $comando->bindValue(':busca',$busca);
+            
             // executar consulta
             $comando->execute(); // executar comando
 
             // listar o resultado da consulta
             $lista = $comando->fetchAll();
+  
             foreach($lista as $pessoa){
                 echo "<tr><td>".$pessoa['id']."</td><td>".$pessoa['nome']."</td><td>".$pessoa['telefone']."</td></tr>";
+           
+           
+            }
+            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $id =  isset($_POST['id'])?$_POST['id']:0; 
+                $nome =  isset($_POST['nome'])?$_POST['nome']:0; 
+                $telefone =  isset($_POST['telefone'])?$_POST['telefone']:0; 
+                
+                if($id > 0) { //alterando
+                    $sql = 'UPDATE pessoa 
+                               SET nome = :nome, telefone = :telefone
+                             WHERE id = :id';
+                    $comando = $conexao->prepare($sql); 
+                    $comando->bindValue(':id',$id);
+                    $comando->bindValue(':nome',$nome);
+                    $comando->bindValue(':telefone',$telefone);
+
+                }else{ // inserindo
+                    $sql = 'INSERT INTO pessoa (nome, telefone)
+                            VALUES (:nome, :telefone)';
+                    $comando = $conexao->prepare($sql); 
+                    $comando->bindValue(':nome',$nome);
+                    $comando->bindValue(':telefone',$telefone);
+                }
+                if ($comando->execute())
+                    echo "Dados inseridos com sucesso!";
+                else
+                    echo "erro ao inserir dados!";
             }
         ?>
     </table>
