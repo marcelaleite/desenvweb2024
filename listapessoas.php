@@ -28,8 +28,18 @@
             // montar consulta
             $sql = "SELECT * FROM pessoa";
 
-            // executar consulta
+            $id =  isset($_GET['id'])?$_GET['id']:0; // pegar id
+
+            if ($id > 0 )
+                $sql .= " WHERE id = :id";
+
+            // prepara o comando
             $comando = $conexao->prepare($sql); // preparar comando
+            // vincular os parâmetros
+            if ($id > 0 )
+                $comando->bindValue(':id',$id);
+
+            // executar consulta
             $comando->execute(); // executar comando
 
             // listar o resultado da consulta
