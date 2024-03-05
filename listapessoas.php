@@ -45,7 +45,8 @@ if ($id > 0){
                 <input type="text" name="nome" id="nome" value="<?php if(isset($contato)) echo $contato['nome']?>">
                 <label for="telefone">Telefone:</label>
                 <input type="text" name="telefone" id="telefone" value="<?php if(isset($contato)) echo $contato['telefone']?>">
-                <button type='submit'>Salvar</button>
+                <button type='submit' name='acao' value='salvar'>Salvar</button>
+                <button type='submit' name='acao' value='excluir'>Excluir</button>
                 <button type='reset'>Cancelar</button>
         </fieldset>
     </form>
@@ -83,22 +84,31 @@ if ($id > 0){
                 $id =  isset($_POST['id'])?$_POST['id']:0; 
                 $nome =  isset($_POST['nome'])?$_POST['nome']:0; 
                 $telefone =  isset($_POST['telefone'])?$_POST['telefone']:0; 
+                $acao =  isset($_POST['acao'])?$_POST['acao']:0; 
                 
-                if($id > 0) { //alterando
-                    $sql = 'UPDATE pessoa 
-                               SET nome = :nome, telefone = :telefone
-                             WHERE id = :id';
-                    $comando = $conexao->prepare($sql); 
-                    $comando->bindValue(':id',$id);
-                    $comando->bindValue(':nome',$nome);
-                    $comando->bindValue(':telefone',$telefone);
+                if($acao == 'salvar'){
+                    if($id > 0) { //alterando
+                        $sql = 'UPDATE pessoa 
+                                SET nome = :nome, telefone = :telefone
+                                WHERE id = :id';
+                        $comando = $conexao->prepare($sql); 
+                        $comando->bindValue(':id',$id);
+                        $comando->bindValue(':nome',$nome);
+                        $comando->bindValue(':telefone',$telefone);
 
-                }else{ // inserindo
-                    $sql = 'INSERT INTO pessoa (nome, telefone)
-                            VALUES (:nome, :telefone)';
-                    $comando = $conexao->prepare($sql); 
-                    $comando->bindValue(':nome',$nome);
-                    $comando->bindValue(':telefone',$telefone);
+                    }else{ // inserindo
+                        $sql = 'INSERT INTO pessoa (nome, telefone)
+                                VALUES (:nome, :telefone)';
+                        $comando = $conexao->prepare($sql); 
+                        $comando->bindValue(':nome',$nome);
+                        $comando->bindValue(':telefone',$telefone);
+                    }
+                }elseif ($acao == 'excluir'){
+                    $sql = 'DELETE 
+                              FROM pessoa
+                             WHERE id = :id';
+                        $comando = $conexao->prepare($sql); 
+                        $comando->bindValue(':id',$id);
                 }
                 if ($comando->execute())
                     echo "Dados inseridos/alterados com sucesso!";
