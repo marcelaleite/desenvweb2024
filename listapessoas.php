@@ -10,6 +10,7 @@ define('DSN', "mysql:host=".HOST.";port=".PORT.";dbname=".DB.";charset=UTF8");
 // conectar com o banco 
 $conexao = new PDO(DSN, USUARIO, SENHA);
 
+
 // montar consulta
 $sql = "SELECT * FROM pessoa WHERE id = :id";
 $id =  isset($_GET['id'])?$_GET['id']:0; // pegar busca
@@ -76,9 +77,7 @@ if ($id > 0){
             <th>Nome</th>
             <th>Telefone</th>
         </tr>
-        <?php
-           
-  
+        <?php         
             // Inserir e alterar dados
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $id =  isset($_POST['id'])?$_POST['id']:0; 
@@ -97,11 +96,11 @@ if ($id > 0){
                         $comando->bindValue(':telefone',$telefone);
 
                     }else{ // inserindo
-                        $sql = 'INSERT INTO pessoa (nome, telefone)
-                                VALUES (:nome, :telefone)';
-                        $comando = $conexao->prepare($sql); 
-                        $comando->bindValue(':nome',$nome);
-                        $comando->bindValue(':telefone',$telefone);
+                        $pessoa = new Pessoa();
+                        $pessoa->setId(0);
+                        $pessoa->setNome($nome);
+                        $pessoa->setTelefone($telefone);
+                        $pessoa->incluir($conexao);
                     }
                 }elseif ($acao == 'excluir'){
                     $sql = 'DELETE 
