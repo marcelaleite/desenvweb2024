@@ -4,6 +4,9 @@ class Pessoa{
     private $nome;
     private $telefone;
 
+    /**
+     * Métodos da classe: definem o comportamento do objeto pessoa
+     */
     public function setId($novoId){
         if ($novoId < 0)
             echo "Erro: id inválido!";
@@ -29,19 +32,39 @@ class Pessoa{
     }
 
     /***
-     * Inclui uma pessoa no banco  */ 
-    
+     * Inclui uma pessoa no banco  */     
     public function incluir($conexao){
         $sql = 'INSERT INTO pessoa (nome, telefone)
                      VALUES (:nome, :telefone)';
+        $comando = $conexao->prepare($sql);  // prepara o comando para executar no banco de dados
+        $comando->bindValue(':nome',$this->nome); // vincula os valores com o comando do banco de dados
+        $comando->bindValue(':telefone',$this->telefone);
+        return $comando->execute(); // executa o comando
+    }    
+    /** Método para excluir uma pessoa do banco de dados */
+    public function excluir($conexao){
+        $sql = 'DELETE 
+                  FROM pessoa
+                 WHERE id = :id';
         $comando = $conexao->prepare($sql); 
+        $comando->bindValue(':id',$this->id);
+        return $comando->execute();
+    }  
+
+    /**
+     * Essa função altera os dados de uma pessoa no banco de dados
+     */
+    public function alterar($conexao){
+        $sql = 'UPDATE pessoa 
+                   SET nome = :nome, telefone = :telefone
+                 WHERE id = :id';
+        $comando = $conexao->prepare($sql); 
+        $comando->bindValue(':id',$this->id);
         $comando->bindValue(':nome',$this->nome);
         $comando->bindValue(':telefone',$this->telefone);
         return $comando->execute();
     }    
-    public function excluir(){}    
-    public function alterar(){}    
-    public function listar(){}    
+    public function listar($conexao){}    
 
 }
 

@@ -84,32 +84,26 @@ if ($id > 0){
                 $nome =  isset($_POST['nome'])?$_POST['nome']:0; 
                 $telefone =  isset($_POST['telefone'])?$_POST['telefone']:0; 
                 $acao =  isset($_POST['acao'])?$_POST['acao']:0; 
-                
-                if($acao == 'salvar'){
-                    if($id > 0) { //alterando
-                        $sql = 'UPDATE pessoa 
-                                SET nome = :nome, telefone = :telefone
-                                WHERE id = :id';
-                        $comando = $conexao->prepare($sql); 
-                        $comando->bindValue(':id',$id);
-                        $comando->bindValue(':nome',$nome);
-                        $comando->bindValue(':telefone',$telefone);
 
-                    }else{ // inserindo
-                        $pessoa = new Pessoa();
-                        $pessoa->setId(0);
-                        $pessoa->setNome($nome);
-                        $pessoa->setTelefone($telefone);
-                        $pessoa->incluir($conexao);
-                    }
+                // criar o objeto Pessoa que irá persistir os dados 
+                $pessoa = new Pessoa();
+                // atribuir os valores para o objeto usando os métodos da classe
+                $pessoa->setId($id);
+                $pessoa->setNome($nome);
+                $pessoa->setTelefone($telefone);
+                $resultado = "";
+                if($acao == 'salvar'){
+                    if($id > 0)//alterando
+                        // chamar o método para alterar uma pessoa
+                        $resultado = $pessoa->alterar($conexao);
+                    else // inserindo                        
+                        // chamar o método para incluir uma pessoa
+                        $resultado = $pessoa->incluir($conexao);
                 }elseif ($acao == 'excluir'){
-                    $sql = 'DELETE 
-                              FROM pessoa
-                             WHERE id = :id';
-                        $comando = $conexao->prepare($sql); 
-                        $comando->bindValue(':id',$id);
+                    // chamar o método para exluir uma pessoa
+                    $resultado = $pessoa->excluir($conexao);
                 }
-                if ($comando->execute())
+                if ($resultado)
                     echo "Dados inseridos/alterados com sucesso!";
                 else
                     echo "erro ao inserir dados!";
