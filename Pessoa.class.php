@@ -30,6 +30,8 @@ class Pessoa{
     public function getId(){
         return $this->id;
     }
+    public function getNome() { return $this->nome;}
+    public function getTelefone() { return $this->telefone;}
 
     /***
      * Inclui uma pessoa no banco  */     
@@ -64,8 +66,36 @@ class Pessoa{
         $comando->bindValue(':telefone',$this->telefone);
         return $comando->execute();
     }    
-    public function listar($conexao){}    
+    public function listar($conexao, $tipo = 0, $busca = "" ){
+        // montar consulta
+        $sql = "SELECT * FROM pessoa";        
+        if ($tipo > 0 )
+            switch($tipo){
+                case 1: $sql .= " WHERE id = :busca"; break;
+                case 2: $sql .= " WHERE nome like :busca"; $busca = "%{$busca}%"; break;
+                case 3: $sql .= " WHERE telefone like :busca";  $busca = "%{$busca}%";  break;
+            }
 
+        // prepara o comando
+        $comando = $conexao->prepare($sql); // preparar comando
+        // vincular os parâmetros
+        if ($tipo > 0 )
+            $comando->bindValue(':busca',$busca);
+
+        // executar consulta
+        $comando->execute(); // executar comando
+        $pessoas = array();
+        // listar o resultado da consulta         
+        while($registro = $comando->fetch()){
+            $pessoa = new Pessoa();
+            $pessoa->setId($registro['id']);
+            $pessoa->setNome($registro['nome']);
+            $pessoa->setTelefone($registro['telefone']);
+
+            array_push($pessoas,$pessoa);
+        }
+        return $pessoas;  
+    }    
 }
 
 ?>
