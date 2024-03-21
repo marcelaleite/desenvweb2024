@@ -1,8 +1,14 @@
 <?php
 class Pessoa{
     private $id; // atributos privados podem ser lidos e escritos somente pelos membros da classe
-    private $nome;
+    private $nome; 
     private $telefone;
+
+    public function __construct($id = 0, $nome = "", $telefone = ""){
+        $this->setId($id);
+        $this->setNome($nome);
+        $this->setTelefone($telefone);
+    }
 
     /**
      * Métodos da classe: definem o comportamento do objeto pessoa
@@ -87,11 +93,7 @@ class Pessoa{
         $pessoas = array();
         // listar o resultado da consulta         
         while($registro = $comando->fetch()){
-            $pessoa = new Pessoa();
-            $pessoa->setId($registro['id']);
-            $pessoa->setNome($registro['nome']);
-            $pessoa->setTelefone($registro['telefone']);
-
+            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] );
             array_push($pessoas,$pessoa);
         }
         return $pessoas;  

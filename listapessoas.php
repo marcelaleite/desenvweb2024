@@ -78,11 +78,7 @@ if ($id > 0){
                 $acao =  isset($_POST['acao'])?$_POST['acao']:0; 
 
                 // criar o objeto Pessoa que irá persistir os dados 
-                $pessoa = new Pessoa();
-                // atribuir os valores para o objeto usando os métodos da classe
-                $pessoa->setId($id);
-                $pessoa->setNome($nome);
-                $pessoa->setTelefone($telefone);
+                $pessoa = new Pessoa($id,$nome,$telefone);
                 $resultado = "";
                 if($acao == 'salvar'){
                     if($id > 0)//alterando
