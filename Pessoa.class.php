@@ -4,7 +4,7 @@ class Pessoa{
     private $nome; 
     private $telefone;
 
-    public function __construct($id = 0, $nome = "", $telefone = ""){
+    public function __construct($id = 0, $nome = "null", $telefone = "null"){
         $this->setId($id);
         $this->setNome($nome);
         $this->setTelefone($telefone);

@@ -13,11 +13,14 @@
     $a1 = new Aluno(); // instanciando um objeto do tipo aluno
 
     //  definir informações do objeto
-    $a1->matricula = "1111";
+    $a1->matricula = "1111"; // usar -> para acessar o membro da classe
     $a1->nome = "João";
     $a1->login = "joao@mail.com";
     $a1->senha = "xxxx";
-    var_dump($a1);
+    echo $a1->nome; // mesma forma para ler
+    $a1->acessarInternet();
+    $a1->efetuarLogin("mar","123");
+
     ?>
 </body>
 </html>
