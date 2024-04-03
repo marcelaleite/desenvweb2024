@@ -54,7 +54,7 @@ include_once('pessoa.php');
             <th>Telefone</th>
         </tr>
         <?php  
-            foreach($lista as $pessoa){
+            foreach($lista as $pessoa){ // monta a tabela com base na variável lista, criada no pessoa.php
                 echo "<tr><td><a href='index.php?id=".$pessoa->getId()."'>".$pessoa->getId()."</a></td><td>".$pessoa->getNome()."</td><td>".$pessoa->getTelefone()."</td></tr>";
             }     
         ?>

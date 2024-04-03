@@ -2,12 +2,14 @@
 require_once("../classes/Database.class.php");
 
 class Pessoa{
-    private $id; // atributos privados podem ser lidos e escritos somente pelos membros da classe
+    // Atributos da classe - informações que a classe irá controlar/manter
+    private $id; // atributos privados podem ser lidos e escritos somente pelos membros da classe, públicos pode ser manipulados por qualquer outro objeto/programa
     private $nome; 
     private $telefone;
 
+    //construtor da classe - permite definir o estado incial do objeto quando instanciado
     public function __construct($id = 0, $nome = "null", $telefone = "null"){
-        $this->setId($id);
+        $this->setId($id); // chama os métodos da classe para definir os valores dos atributos, enviando os parâmetros recebidos no construtor, em vez de atribuir direto, assim passa pelas regras de negócio
         $this->setNome($nome);
         $this->setTelefone($telefone);
     }
@@ -17,7 +19,7 @@ class Pessoa{
      */
     public function setId($novoId){
         if ($novoId < 0)
-            throw new Exception("Erro: id inválido!");
+            throw new Exception("Erro: id inválido!"); //dispara uma exceção
         else
             $this->id = $novoId;
     }
@@ -44,7 +46,8 @@ class Pessoa{
     /***
      * Inclui uma pessoa no banco  */     
     public function incluir(){
-        $conexao = Database::getInstance();
+        // abrir conexão com o banco de dados
+        $conexao = Database::getInstance(); // chama o método getInstance da classe Database de forma estática para abrir conexão com o banco de dados
         $sql = 'INSERT INTO pessoa (nome, telefone)
                      VALUES (:nome, :telefone)';
         $comando = $conexao->prepare($sql);  // prepara o comando para executar no banco de dados
@@ -78,7 +81,7 @@ class Pessoa{
         return $comando->execute();
     }    
 
-    //** Método estático para listar pessoas */
+    //** Método estático para listar pessoas - nesse caso não precisa criar um objeto Pessoa para poder chamar esse método */
     public static function listar($tipo = 0, $busca = "" ){
         $conexao = Database::getInstance();
         // montar consulta
@@ -98,13 +101,13 @@ class Pessoa{
 
         // executar consulta
         $comando->execute(); // executar comando
-        $pessoas = array();
+        $pessoas = array(); // cria um vetor para armazenar o resultado da busca
         // listar o resultado da consulta         
         while($registro = $comando->fetch()){
-            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] );
-            array_push($pessoas,$pessoa);
+            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] ); // cria um objeto pessoa com os dados que vem do banco
+            array_push($pessoas,$pessoa); // armazena no vetor pessoas
         }
-        return $pessoas;  
+        return $pessoas;  // retorna o vetor pessoas com uma coleção de objetos do tipo Pessoa
     }    
 }
 

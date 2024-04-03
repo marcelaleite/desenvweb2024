@@ -8,12 +8,13 @@ require_once('../config/config.inc.php');
 class Database{
     //private $conexao;
 
-    public static function getInstance(){
+    /** Método para criar conexão com o banco de dados */
+    public static function getInstance(){ 
         try{ // com tratamento de exceção para conexão com o BD
             // conectar com o banco 
             return new PDO(DSN, USUARIO, SENHA);
-        }catch(PDOException $e){
-            echo "Erro ao conectar ao banco de dados: ".$e->getMessage();
+        }catch(PDOException $e){ // se ocorrer algum erro - pega a exceção ocorrida 
+            echo "Erro ao conectar ao banco de dados: ".$e->getMessage(); // ... e apresenta mensagem de erro para o usuário
         }
     }
 }
