@@ -12,6 +12,7 @@ include_once('pessoa.php');
 <body>
     <!-- Formulário de Cadastro -->
     <h1>CRUD de Contatos</h1>
+    <h3><?=$msg?></h3>
     <form action="pessoa.php" method="post">
         <fieldset>
             <legend>Cadastro de Contatos</legend>        

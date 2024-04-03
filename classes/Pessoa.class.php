@@ -17,20 +17,20 @@ class Pessoa{
      */
     public function setId($novoId){
         if ($novoId < 0)
-            echo "Erro: id inválido!";
+            throw new Exception("Erro: id inválido!");
         else
             $this->id = $novoId;
     }
     // função que define (set) o valor de um atributo
     public function setNome($novoNome){
         if ($novoNome == "")
-            echo "Erro: nome inválido!";
+            throw new Exception("Erro: nome inválido!");
         else
             $this->nome = $novoNome;
     }
     public function setTelefone($novoTelefone){
         if ($novoTelefone == "")
-            echo "Erro: Telefone inválido!";
+            throw new Exception("Erro: Telefone inválido!");
         else
             $this->telefone = $novoTelefone;
     }
