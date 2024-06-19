@@ -1,6 +1,4 @@
-<?php 
-include_once('pessoa.php');
-?>
+<?php  include_once('pessoa.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -41,8 +39,7 @@ include_once('pessoa.php');
                 <option value="2">Nome</option>
                 <option value="3">Telefone</option>
             </select>
-        <button type='submit'>Buscar</button>
-
+            <button type='submit'>Buscar</button>
         </fieldset>
     </form>
     <hr>

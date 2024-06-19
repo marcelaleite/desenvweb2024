@@ -3,11 +3,13 @@
 
 require_once("../classes/Pessoa.class.php");
 
-// Esse trecho avalia se foi enviado um ID na requisição GET - nesse caso o sistema deve apresentar o formulário preenchido com os dados do contato para edição
+// Esse trecho avalia se foi enviado um ID na requisição GET - nesse caso o sistema deve apresentar o formulário 
+// preenchido com os dados do contato para edição
 $id =  isset($_GET['id'])?$_GET['id']:0; // pegar busca
 $msg =  isset($_GET['MSG'])?$_GET['MSG']:""; // pegar busca
 if ($id > 0){
-    $contato = Pessoa::listar(1,$id)[0]; // cria a variável contato que será utilizada para preencher o formulário quando o usuário clicar para alterar um registro
+    $contato = Pessoa::listar(1,$id)[0]; // cria a variável contato que será utilizada para preencher o formulário
+                                         //       quando o usuário clicar para alterar um registro
 }
 
 // Inserir e alterar dados
@@ -43,5 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     //  Listagem e Pesquisa
     $busca =  isset($_GET['busca'])?$_GET['busca']:0; // pegar informação da busca
     $tipo =  isset($_GET['tipo'])?$_GET['tipo']:0; // pegar tipo de busca  
-    $lista = Pessoa::listar($tipo,$busca); // chama o método listar da classe Pessoa de forma estática (sem criar o objeto Pessoa) para preencher a variável lista que será usada para montar a tabela que lista todos os contatos
+    // chama o método listar da classe Pessoa de forma estática (sem criar o objeto Pessoa) para preencher a variável lista 
+       // que será usada para montar a tabela que lista todos os contatos
+    $lista = Pessoa::listar($tipo,$busca); 
 }
