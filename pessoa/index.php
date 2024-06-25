@@ -20,6 +20,10 @@
                 <input type="text" name="nome" id="nome" value="<?php if(isset($contato)) echo $contato->getNome()?>">
                 <label for="telefone">Telefone:</label>
                 <input type="text" name="telefone" id="telefone" value="<?php if(isset($contato)) echo $contato->getTelefone()?>">
+                <label for="usuario">Usuario:</label>
+                <input type="email" placeholder="informe um e-mail" name="usuario" id="usuario" value="<?php if(isset($contato)) echo $contato->getLogin()->getUsuario()?>">
+                <label for="senha">Senha:</label>
+                <input type="password" name="senha" id="senha" value="<?php if(isset($contato)) echo $contato->getLogin()->getSenha()?>">
                 <button type='submit' name='acao' value='salvar'>Salvar</button>
                 <button type='submit' name='acao' value='excluir'>Excluir</button>
                 <button type='reset'>Cancelar</button>
@@ -52,7 +56,7 @@
         </tr>
         <?php  
             foreach($lista as $pessoa){ // monta a tabela com base na variável lista, criada no pessoa.php
-                echo "<tr><td><a href='index.php?id=".$pessoa->getId()."'>".$pessoa->getId()."</a></td><td>".$pessoa->getNome()."</td><td>".$pessoa->getTelefone()."</td></tr>";
+                echo "<tr><td><a href='index.php?id=".$pessoa->getId()."'>".$pessoa->getId()."</a></td><td>".$pessoa->getNome()."</td><td>".$pessoa->getTelefone()."</td><td>".$pessoa->getLogin()->getUsuario()."</td></tr>";
             }     
         ?>
     </table>

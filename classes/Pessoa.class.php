@@ -43,18 +43,19 @@ class Pessoa{
     public function getId(){ return $this->id; }
     public function getNome() { return $this->nome;}
     public function getTelefone() { return $this->telefone;}
+    public function getLogin() { return $this->login;}
 
     /*** Inclui uma pessoa no banco  */     
     public function incluir(){
         // abrir conexão com o banco de dados
-        $conexao = Database::getInstance(); // chama o método getInstance da classe Database de forma 
-        $sql = 'INSERT INTO pessoa (nome, telefone, usuario, senha)   // ... estática para abrir conexão com o banco de dados
+        $conexao = Database::getInstance(); // chama o método getInstance da classe Database de forma // ... estática para abrir conexão com o banco de dados
+        $sql = 'INSERT INTO pessoa (nome, telefone, usuario, senha)   
                      VALUES (:nome, :telefone, :usuario, :senha)';
         $comando = $conexao->prepare($sql);  // prepara o comando para executar no banco de dados
         $comando->bindValue(':nome',$this->nome); // vincula os valores com o comando do banco de dados
         $comando->bindValue(':telefone',$this->telefone);
-        $comando->bindValue(':usuario',$this->login->getUsuario());
-        $comando->bindValue(':senha',$this->login->getSenha());
+        $comando->bindValue(':usuario',$this->getLogin()->getUsuario());
+        $comando->bindValue(':senha',$this->getLogin()->getSenha());
         return $comando->execute(); // executa o comando
     }    
     /** Método para excluir uma pessoa do banco de dados */
@@ -72,12 +73,14 @@ class Pessoa{
     public function alterar(){
         $conexao = Database::getInstance();
         $sql = 'UPDATE pessoa 
-                   SET nome = :nome, telefone = :telefone
+                   SET nome = :nome, telefone = :telefone, usuario = :usuario, senha = :senha
                  WHERE id = :id';
         $comando = $conexao->prepare($sql); 
         $comando->bindValue(':id',$this->id);
         $comando->bindValue(':nome',$this->nome);
         $comando->bindValue(':telefone',$this->telefone);
+        $comando->bindValue(':usuario',$this->login->getUsuario());
+        $comando->bindValue(':senha',$this->login->getSenha());
         return $comando->execute();
     }    
 
@@ -98,7 +101,8 @@ class Pessoa{
         $comando->execute(); // executar comando
         $pessoas = array(); // cria um vetor para armazenar o resultado da busca            
         while($registro = $comando->fetch()){   // listar o resultado da consulta    
-            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] ); // cria um objeto pessoa com os dados que vem do banco
+            $login = new Login($registro['id'],$registro['usuario'],$registro['senha'] );
+            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login); // cria um objeto pessoa com os dados que vem do banco
             array_push($pessoas,$pessoa); // armazena no vetor pessoas
         }
         return $pessoas;  // retorna o vetor pessoas com uma coleção de objetos do tipo Pessoa

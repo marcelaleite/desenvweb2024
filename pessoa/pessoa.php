@@ -17,11 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $id =  isset($_POST['id'])?$_POST['id']:0; 
     $nome =  isset($_POST['nome'])?$_POST['nome']:0; 
     $telefone =  isset($_POST['telefone'])?$_POST['telefone']:0; 
+    $usuario =  isset($_POST['usuario'])?$_POST['usuario']:0; 
+    $senha =  isset($_POST['senha'])?$_POST['senha']:0; 
     $acao =  isset($_POST['acao'])?$_POST['acao']:0; 
 
     try{
         // criar o objeto Pessoa que irá persistir os dados 
-        $pessoa = new Pessoa($id,$nome,$telefone);
+        $login = new Login($id,$usuario,$senha);
+        $pessoa = new Pessoa($id,$nome,$telefone,$login);
     }catch(Exception $e){ // caso ocorra algum erro na validação das regras de negócio dispara uma exceção
         header('location: index.php?MSG=Erro: '.$e->getMessage()); // direciona para o incio com a mensagem de erro
     }

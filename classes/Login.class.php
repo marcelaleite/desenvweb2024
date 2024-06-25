@@ -23,7 +23,7 @@ class Login{
     public function getUsuario(){ return $this->usuario;}
     public function getSenha(){ return $this->senha;}
 
-    public function efetuarLogin($usuario, $senha){
+    public static function efetuarLogin($usuario, $senha){
         $conexao = Database::getInstance();
         $sql = 'SELECT * FROM pessoa 
                  WHERE usuario = :usuario
@@ -38,6 +38,6 @@ class Login{
                 return $pessoa;
             }
         }
-
+        return false;
     }
 }

@@ -15,3 +15,10 @@ insert into pessoa values (null, 'João','444');
 -- criar usuário para o banco
 create user 'fulano'@'localhost' identified by '123'; -- cria o usuário para acessar ao banco de dados com o login fulano e senha 123
 grant all on contatos.* to 'fulano'@'localhost'; -- dá todas as permissões para o usuário fulano no banco contatos
+
+alter table pessoa
+add column usuario varchar(250) unique,
+add column senha varchar(250);
+
+
+desc pessoa;
