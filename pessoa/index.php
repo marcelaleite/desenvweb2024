@@ -1,4 +1,7 @@
-<?php  include_once('pessoa.php'); ?>
+<?php  
+require_once('../login/validalogin.php');
+
+include_once('pessoa.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
