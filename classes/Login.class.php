@@ -43,7 +43,7 @@ class Login{
         $comando->bindValue(':senha',$senha);
         if ($comando->execute()){
             while($registro = $comando->fetch()){ 
-                $login = new Login($registro['id'],$registro['usuario'],$registro['senha'] );
+                $login = new Login($registro['usuario'],$registro['senha'] );
                 $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login);
                 return $pessoa;
             }
