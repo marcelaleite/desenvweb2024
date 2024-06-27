@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     try{
         // criar o objeto Pessoa que irá persistir os dados 
-        $login = new Login($id,$usuario,$senha);
+        $login = new Login($usuario,$senha);
         $pessoa = new Pessoa($id,$nome,$telefone,$login);
     }catch(Exception $e){ // caso ocorra algum erro na validação das regras de negócio dispara uma exceção
         header('location: index.php?MSG=Erro: '.$e->getMessage()); // direciona para o incio com a mensagem de erro

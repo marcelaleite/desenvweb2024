@@ -56,6 +56,7 @@ include_once('pessoa.php'); ?>
             <th>Id</th>
             <th>Nome</th>
             <th>Telefone</th>
+            <th>Usuário</th>
         </tr>
         <?php  
             foreach($lista as $pessoa){ // monta a tabela com base na variável lista, criada no pessoa.php

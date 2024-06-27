@@ -101,7 +101,7 @@ class Pessoa{
         $comando->execute(); // executar comando
         $pessoas = array(); // cria um vetor para armazenar o resultado da busca            
         while($registro = $comando->fetch()){   // listar o resultado da consulta    
-            $login = new Login($registro['id'],$registro['usuario'],$registro['senha'] );
+            $login = new Login($registro['usuario'],$registro['senha'] );
             $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login); // cria um objeto pessoa com os dados que vem do banco
             array_push($pessoas,$pessoa); // armazena no vetor pessoas
         }
