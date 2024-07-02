@@ -22,3 +22,25 @@ add column senha varchar(250);
 
 
 desc pessoa;
+use contatos;
+create table endereco(  idendereco int primary key auto_increment,
+						cep varchar(100),
+						pais varchar(100),
+						estado varchar(2),
+						cidade varchar(250),
+						bairro varchar(250),
+						rua varchar(250),
+						numero int,
+						complemento varchar(250),
+                        idpessoa int,
+                        foreign key fk_pessoa (idpessoa) 
+                                       references pessoa(id) on delete cascade
+					);
+
+
+
+
+
+
+
+commit;
