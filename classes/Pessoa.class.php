@@ -8,17 +8,25 @@ class Pessoa{
     private $nome; // ... públicos pode ser manipulados por qualquer outro objeto/programa
     private $telefone;
     private $login; // objeto login
+    private $endereco;
 
     //construtor da classe - permite definir o estado incial do objeto quando instanciado
-    public function __construct($id = 0, $nome = "null", $telefone = "null", Login $login = null){
+    public function __construct($id = 0, $nome = "null", $telefone = "null", Login $login = null, Endereco $endereco = null){
         $this->setId($id); // chama os métodos da classe para definir os valores dos atributos,
         $this->setNome($nome); //...   enviando os parâmetros recebidos no construtor, em vez de
         $this->setTelefone($telefone); // .... atribuir direto, assim passa pelas regras de negócio
         $this->setLogin($login);
+        $this->setEndereco($endereco);
     }
+
     public function setLogin(Login $login){
         $this->login = $login;
     }
+
+    public function setEndereco(Endereco $endereco = null){
+        $this->endereco = $endereco;
+    }
+
     /**  Métodos da classe: definem o comportamento do objeto pessoa */
     public function setId($novoId){
         if ($novoId < 0)
@@ -44,29 +52,30 @@ class Pessoa{
     public function getNome() { return $this->nome;}
     public function getTelefone() { return $this->telefone;}
     public function getLogin() { return $this->login;}
+    public function getEndereco() { return $this->endereco;}
 
     /*** Inclui uma pessoa no banco  */     
     public function incluir(){
-        // abrir conexão com o banco de dados
-        $conexao = Database::getInstance(); // chama o método getInstance da classe Database de forma // ... estática para abrir conexão com o banco de dados
         $sql = 'INSERT INTO pessoa (nome, telefone, usuario, senha)   
                      VALUES (:nome, :telefone, :usuario, :senha)';
-        $comando = $conexao->prepare($sql);  // prepara o comando para executar no banco de dados
-        $comando->bindValue(':nome',$this->nome); // vincula os valores com o comando do banco de dados
-        $comando->bindValue(':telefone',$this->telefone);
-        $comando->bindValue(':usuario',$this->getLogin()->getUsuario());
-        $comando->bindValue(':senha',$this->getLogin()->getSenha());
-        return $comando->execute(); // executa o comando
+        $parametros = array(':nome'=>$this->nome,
+                            ':telefone'=>$this->telefone,
+                            ':senha'=>$this->getLogin()->getSenha(),
+                            ':usuario'=>$this->getLogin()->getUsuario());
+
+        Database::executar($sql, $parametros);
+        
+        $this->endereco->setIdPessoa(Database::$lastId);
+        $this->endereco->incluir();
+      
     }    
     /** Método para excluir uma pessoa do banco de dados */
     public function excluir(){
-        $conexao = Database::getInstance();
         $sql = 'DELETE 
                   FROM pessoa
                  WHERE id = :id';
-        $comando = $conexao->prepare($sql); 
-        $comando->bindValue(':id',$this->id);
-        return $comando->execute();
+        $parametros = array(':id'=> $this->id);
+        return Database::executar($sql, $parametros);
     }  
 
     /** Essa função altera os dados de uma pessoa no banco de dados  */
@@ -81,7 +90,15 @@ class Pessoa{
         $comando->bindValue(':telefone',$this->telefone);
         $comando->bindValue(':usuario',$this->login->getUsuario());
         $comando->bindValue(':senha',$this->login->getSenha());
-        return $comando->execute();
+   
+        try{
+            $comando->execute(); 
+            $this->getEndereco()->alterar();
+            return true;
+        }catch(PDOException $e){
+            throw new Exception ("Erro ao executar o comando no banco de dados: "
+               .$e->getMessage()." - ".$comando->errorInfo()[2]);
+        }
     }    
 
     //** Método estático para listar pessoas - nesse caso não precisa criar um objeto Pessoa para poder chamar esse método */
@@ -102,7 +119,8 @@ class Pessoa{
         $pessoas = array(); // cria um vetor para armazenar o resultado da busca            
         while($registro = $comando->fetch()){   // listar o resultado da consulta    
             $login = new Login($registro['usuario'],$registro['senha'] );
-            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login); // cria um objeto pessoa com os dados que vem do banco
+            $endereco = Endereco::listar(5,$registro['id'])[0];
+            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login, $endereco); // cria um objeto pessoa com os dados que vem do banco
             array_push($pessoas,$pessoa); // armazena no vetor pessoas
         }
         return $pessoas;  // retorna o vetor pessoas com uma coleção de objetos do tipo Pessoa

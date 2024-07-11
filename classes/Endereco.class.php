@@ -13,13 +13,17 @@ class Endereco{
     private $complemento; 
     private $idpessoa;
 
-
-    //construtor da classe - permite definir o estado incial do objeto quando instanciado
-    public function __construct($id = 0, $nome = "null", $telefone = "null", Login $login = null){
-        $this->setId($id); // chama os métodos da classe para definir os valores dos atributos,
-        $this->setNome($nome); //...   enviando os parâmetros recebidos no construtor, em vez de
-        $this->setTelefone($telefone); // .... atribuir direto, assim passa pelas regras de negócio
-        $this->setLogin($login);
+    public function __construct($idendereco = 0, $cep = "null", $pais = "null", $estado = "null", $cidade = "null", $bairro = "null", $rua = "null",$numero = 0, $complemento = "null", $idpessoa = 0){
+        $this->setIdEndereco($idendereco);
+        $this->setCep($cep); 
+        $this->setPais($pais); 
+        $this->setEstado($estado);
+        $this->setCidade($cidade);
+        $this->setBairro($bairro);
+        $this->setRua($rua);
+        $this->setNumero($numero);
+        $this->setComplemento($complemento);
+        $this->setIdPessoa($idpessoa);
     }
   
   
@@ -28,38 +32,54 @@ class Endereco{
     public function incluir(){
         // abrir conexão com o banco de dados
         $conexao = Database::getInstance(); // chama o método getInstance da classe Database de forma // ... estática para abrir conexão com o banco de dados
-        $sql = 'INSERT INTO pessoa (nome, telefone, usuario, senha)   
-                     VALUES (:nome, :telefone, :usuario, :senha)';
-        $comando = $conexao->prepare($sql);  // prepara o comando para executar no banco de dados
-        $comando->bindValue(':nome',$this->nome); // vincula os valores com o comando do banco de dados
-        $comando->bindValue(':telefone',$this->telefone);
-        $comando->bindValue(':usuario',$this->getLogin()->getUsuario());
-        $comando->bindValue(':senha',$this->getLogin()->getSenha());
-        return $comando->execute(); // executa o comando
+        $sql = 'INSERT INTO endereco (cep, pais, estado, cidade, bairro, rua, numero, complemento, idpessoa)   
+                     VALUES (:cep, :pais, :estado, :cidade, :bairro, :rua, :numero, :complemento, :idpessoa)';
+        $comando = $conexao->prepare($sql);  
+        $comando->bindValue(':cep',$this->getCep()); 
+        $comando->bindValue(':pais',$this->getPais());
+        $comando->bindValue(':estado',$this->getEstado());
+        $comando->bindValue(':cidade',$this->getCidade());
+        $comando->bindValue(':bairro',$this->getBairro());
+        $comando->bindValue(':rua',$this->getRua());
+        $comando->bindValue(':numero',$this->getNumero());
+        $comando->bindValue(':complemento',$this->getComplemento());
+        $comando->bindValue(':idpessoa',$this->getIdPessoa());
+
+        try{
+            return $comando->execute(); 
+        }catch(PDOException $e){
+            throw new Exception ("Erro ao executar o comando no banco de dados: "
+               .$e->getMessage()." - ".$comando->errorInfo()[2]);
+        }
     }    
     /** Método para excluir uma pessoa do banco de dados */
     public function excluir(){
         $conexao = Database::getInstance();
         $sql = 'DELETE 
-                  FROM pessoa
-                 WHERE id = :id';
+                  FROM endereco
+                 WHERE idendereco = :id';
         $comando = $conexao->prepare($sql); 
-        $comando->bindValue(':id',$this->id);
+        $comando->bindValue(':id',$this->getIdendereco());
         return $comando->execute();
     }  
 
     /** Essa função altera os dados de uma pessoa no banco de dados  */
     public function alterar(){
         $conexao = Database::getInstance();
-        $sql = 'UPDATE pessoa 
-                   SET nome = :nome, telefone = :telefone, usuario = :usuario, senha = :senha
-                 WHERE id = :id';
-        $comando = $conexao->prepare($sql); 
-        $comando->bindValue(':id',$this->id);
-        $comando->bindValue(':nome',$this->nome);
-        $comando->bindValue(':telefone',$this->telefone);
-        $comando->bindValue(':usuario',$this->login->getUsuario());
-        $comando->bindValue(':senha',$this->login->getSenha());
+        $sql = 'UPDATE endereco 
+                   SET cep = :cep, pais = :pais, estado = :estado, cidade = :cidade, bairro = :bairro, rua = :rua, numero = :numero, complemento = :complemento, idpessoa = :idpessoa
+                 WHERE idendereco = :id';
+        $comando = $conexao->prepare($sql);  
+        $comando->bindValue(':id',$this->getIdendereco()); 
+        $comando->bindValue(':cep',$this->getCep()); 
+        $comando->bindValue(':pais',$this->getPais());
+        $comando->bindValue(':estado',$this->getEstado());
+        $comando->bindValue(':cidade',$this->getCidade());
+        $comando->bindValue(':bairro',$this->getBairro());
+        $comando->bindValue(':rua',$this->getRua());
+        $comando->bindValue(':numero',$this->getNumero());
+        $comando->bindValue(':complemento',$this->getComplemento());
+        $comando->bindValue(':idpessoa',$this->getIdPessoa());
         return $comando->execute();
     }    
 
@@ -67,24 +87,34 @@ class Endereco{
     public static function listar($tipo = 0, $busca = "" ){
         $conexao = Database::getInstance();
         // montar consulta
-        $sql = "SELECT * FROM pessoa";        
+        $sql = "SELECT * FROM endereco";        
         if ($tipo > 0 )
             switch($tipo){
                 case 1: $sql .= " WHERE id = :busca"; break;
-                case 2: $sql .= " WHERE nome like :busca"; $busca = "%{$busca}%"; break;
-                case 3: $sql .= " WHERE telefone like :busca";  $busca = "%{$busca}%";  break;
+                case 2: $sql .= " WHERE cep like :busca"; $busca = "%{$busca}%"; break;
+                case 3: $sql .= " WHERE rua like :busca";  $busca = "%{$busca}%";  break;
+                case 4: $sql .= " WHERE pais like :busca";  $busca = "%{$busca}%";  break;
+                case 5: $sql .= " WHERE idpessoa = :busca";  break;
             }
-        $comando = $conexao->prepare($sql); // preparar comando         
+        $comando = $conexao->prepare($sql);      
         if ($tipo > 0 )
-            $comando->bindValue(':busca',$busca); // vincular os parâmetros
-        $comando->execute(); // executar comando
-        $pessoas = array(); // cria um vetor para armazenar o resultado da busca            
-        while($registro = $comando->fetch()){   // listar o resultado da consulta    
-            $login = new Login($registro['usuario'],$registro['senha'] );
-            $pessoa = new Pessoa($registro['id'],$registro['nome'],$registro['telefone'] , $login); // cria um objeto pessoa com os dados que vem do banco
-            array_push($pessoas,$pessoa); // armazena no vetor pessoas
+            $comando->bindValue(':busca',$busca); 
+        $comando->execute();
+        $enderecos = array();            
+        while($registro = $comando->fetch()){  
+            $endereco = new Endereco($registro['idendereco'], 
+                                     $registro['cep'], 
+                                     $registro['pais'],
+                                     $registro['estado'],
+                                     $registro['cidade'],
+                                     $registro['bairro'],
+                                     $registro['rua'],
+                                     $registro['numero'],
+                                     $registro['complemento'],
+                                     $registro['idpessoa']);
+            array_push($enderecos,$endereco); 
         }
-        return $pessoas;  // retorna o vetor pessoas com uma coleção de objetos do tipo Pessoa
+        return $enderecos;  
     }    
 
     /**
